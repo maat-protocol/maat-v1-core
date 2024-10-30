@@ -1,0 +1,21 @@
+{
+  "dependencies": {
+    "@layerzerolabs/oapp-evm": "^0.0.4",
+    "@openzeppelin/contracts": "^5.0.2"
+  },
+  "files": [
+    "src",
+    "README",
+    "package.json"
+  ],
+  "name": "@maat-finance/v1-core",
+  "version": "0.0.6",
+  "devDependencies": {
+    "@layerzerolabs/create3-factory": "^2.3.34",
+    "@layerzerolabs/test-devtools-evm-foundry": "^0.2.12",
+    "husky": "^9.1.1"
+  },
+  "scripts": {
+    "prepare": "husky install"
+  }
+}

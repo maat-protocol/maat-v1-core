@@ -1,0 +1,201 @@
+
+---
+title: Testing generation of schemes
+---
+classDiagram
+
+	class IntentionGenerator {
+		⚙️ uint nonce
+		⚙️ _generateIntentionId() intentionId 
+	}
+
+	class Ownable {
+		🔒 address _owner
+		❗👀 owner() address 
+		⚙️👀 _checkOwner() 
+		❗ renounceOwnership() 
+		❗ transferOwnership(address newOwner) 
+		⚙️ _transferOwnership(address newOwner) 
+	}
+
+	class FeeManager {
+		🔒 uint64 _feeIn
+		🔒 uint64 _feeOut
+		❗ uint64 feePrecision
+		❗ uint maxFee
+		🔒 address _feeTo
+		❗ setFees(uint64 feeIn_, uint64 feeOut_) 
+		❗ setFeeTo(address feeTo_) 
+		⚙️🧮 _calculateFee(uint amount, uint112 fee) uint 
+		❗👀 feeIn() uint112 
+		❗👀 feeOut() uint112 
+		❗👀 feeTo() address 
+	}
+
+	class AddressProviderKeeper {
+		🔒 IMaatAddressProvider _addressProvider
+		❗ bytes4 AddressProviderInterfaceId
+		🔒👀 _validateAddressProviderInterface(address addressProvider_) 
+		❗👀 addressProvider() IMaatAddressProvider 
+	}
+
+	class Roles {
+		❗ address commander
+		❗ address watcher
+		❗ setCommander(address _commander) 
+		❗ setWatcher(address _watcher) 
+	}
+
+	class RelatedVaultManager {
+		🔒 mapping(uint32 => address) _relatedVaults
+		❗ addRelatedVaults(uint32[] _dstEid, address[] _vault) 
+		❗ removeRelatedVault(uint32 _dstEid) 
+		❗👀 getRelatedVault(uint32 _dstEid) _vault 
+	}
+
+	class WithdrawRequestLogic {
+		⚙️ uint _withdrawCancellationDelay
+		❗ uint256 emergencyWithdrawalDelay
+		❗ uint32 chainEid
+		🔒 mapping(bytes32 => WithdrawRequestInfo) _withdrawRequests
+		❗ setWithdrawCancellationDelay(uint timer) 
+		❗ setEmergencyWithdrawalDelay(uint timer) 
+		⚙️ _createWithdrawRequest(bytes32 intentionId, address _owner, address receiver, uint32 dstEid, uint shares, uint estimatedAmountOut) 
+		⚙️ _cancelWithdrawRequest(bytes32 intentionId) owner shares 
+		⚙️ _cleanRequestInfo(bytes32 intentionId) 
+		❗👀 getWithdrawRequest(bytes32 intentionId) WithdrawRequestInfo 
+		❗👀 withdrawCancellationDelay() uint 
+		⚙️👀 _validateWithdrawRequestExistence(bytes32 intentionId) 
+	}
+
+	class TokenKeeper {
+		❗ ERC20 token
+		🔒 uint _idle
+		⚙️ _increaseIdle(uint value) 
+		⚙️ _decreaseIdle(uint value) 
+		❗👀 idle() uint 
+	}
+
+	class StrategyManager {
+		🔒 mapping(bytes32 => Strategy) _supportedStrategies
+		🔒 mapping(address => bytes32) _strategyAddressToId
+		❗ addStrategy(address strategy) 
+		❗ removeStrategy(bytes32 strategyId) 
+		❗ enableStrategy(bytes32 strategyId) 
+		❗ disableStrategy(bytes32 strategyId) 
+		⚙️ _deleteStrategy(bytes32 strategyId, address strategy) 
+		⚙️ _toggleStrategy(bytes32 strategyId, bool isActive) 
+		❗👀 getStrategyByAddress(address strategy) bytes32 bool 
+		❗👀 getStrategyById(bytes32 strategyId) address bool 
+		⚙️👀 _validateStrategyExistence(bytes32 strategyId) 
+		⚙️👀 _validateStrategyExistence(address strategy) 
+	}
+
+	class BridgeLogic {
+		❗👀 stargateAdapter() IStargateAdapter 
+		❗ finishBridge(uint256 amountBridged, uint32 originEid, bytes32 intentionId) 
+		⚙️ _finishBridge(uint amountBridged) 
+		⚙️ _bridge(uint256 _amount, uint32 dstEid, bytes32 intentionId) 
+		⚙️ _bridgeToUser(uint amount, address _receiver, uint32 dstEid) 
+	}
+
+	class Executor {
+		❗ execute(ActionType[] actionType, ActionInput[] inputs) bool 
+		⚙️ _execute(ActionType _type, ActionInput input) 
+		⚙️ _depositInStrategy(bytes32 _strategyId, uint amount, bytes32 intentionId) shares 
+		⚙️ _withdrawFromStrategy(bytes32 _strategyId, uint amount, bytes32 intentionId) shares 
+		⚙️ _fulfillWithdrawRequest(bytes32 intentionId) 
+	}
+
+	class Vault {
+		❗ uint minAmount
+		❗ deposit(uint _assets, address _receiver) shares 
+		❗ mint(uint shares, address receiver) assets 
+		❗ withdraw(uint _assets, address _receiver, address _owner) shares 
+		❗ redeem(uint256 _shares, address _receiver, address _owner) assets 
+		⚙️ _deposit(uint assets, uint shares, address receiver) adjustedAssets adjustedShares 
+		⚙️ _redeem(uint _shares, address _receiver, address _owner) assets 
+		⚙️ _withdraw(uint _assets, address _receiver, address _owner) adjustedShares 
+		⚙️ _sendFunds(address _receiver, uint _assets, uint _shares, uint fee) 
+		⚙️ _sendFee(uint fee) 
+		❗ setMinAmount(uint amount) 
+		⚙️👀 _getVaultName(address _asset) string 
+		⚙️👀 _getVaultSymbol(address _asset) string 
+		❗👀 oracle() IMaatOracleGlobalPPS 
+		❗👀 asset() address 
+		❗👀 totalAssets() uint 
+		❗👀 convertToShares(uint assets) uint 
+		❗👀 _convertToSharesByHigherPPS(uint assets) uint 
+		⚙️👀 _convertToSharesByLowerPPS(uint assets) uint 
+		❗👀 convertToAssets(uint shares) uint 
+		⚙️👀 _convertToAssetsByHigherPPS(uint shares) uint 
+		⚙️👀 _convertToAssetsByLowerPPS(uint shares) uint 
+		❗👀 maxDeposit(address empty) uint256 
+		❗👀 maxMint(address empty) uint256 
+		❗👀 maxRedeem(address receiver) uint 
+		❗👀 maxWithdraw(address receiver) uint 
+		❗👀 previewDeposit(uint assets) uint 
+		❗👀 previewMint(uint shares) uint 
+		❗👀 previewWithdraw(uint assets) uint 
+		❗👀 previewRedeem(uint shares) uint 
+		❗👀 decimals() uint8 
+		⚙️🧮 _validateUser(address _owner, address sender) 
+		⚙️👀 _validateMinAmount(uint amount) 
+	}
+
+	class MaatVaultV1 {
+		⚙️ bytes4 vaultInterfaceId
+		❗ requestWithdraw(uint shares, uint32 dstEid, address _owner, address receiver) intentionId 
+		❗ requestRebalance(bytes data) intentionId 
+		❗ cancelWithdrawal(bytes32 intentionId) owner shares 
+		⚙️ _fulfillWithdrawRequest(bytes32 intentionId) 
+		❗ emergencyWithdraw(bytes32 intentionIdOfFailedWithdrawRequest, ActionInput[] withdrawInputs) 
+		❗ finishSharesBridge(address account, uint256 value) 
+		❗💰 bridgeShares(uint32 _dstEid, uint256 _amount, bytes options) 
+	}
+
+
+
+	Ownable <|-- FeeManager
+
+	Ownable <|-- Roles
+
+	Ownable <|-- RelatedVaultManager
+
+	RelatedVaultManager <|-- WithdrawRequestLogic
+
+	Ownable <|-- StrategyManager
+
+	AddressProviderKeeper <|-- StrategyManager
+
+	TokenKeeper <|-- StrategyManager
+
+	Ownable <|-- BridgeLogic
+
+	AddressProviderKeeper <|-- BridgeLogic
+
+	TokenKeeper <|-- BridgeLogic
+
+	RelatedVaultManager <|-- BridgeLogic
+
+	Roles <|-- Executor
+
+	RelatedVaultManager <|-- Executor
+
+	StrategyManager <|-- Executor
+
+	WithdrawRequestLogic <|-- Executor
+
+	BridgeLogic <|-- Executor
+
+	Ownable <|-- Vault
+
+	AddressProviderKeeper <|-- Vault
+
+	FeeManager <|-- Vault
+
+	TokenKeeper <|-- Vault
+
+	Vault <|-- MaatVaultV1
+
+	Executor <|-- MaatVaultV1

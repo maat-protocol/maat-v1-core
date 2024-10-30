@@ -1,0 +1,23 @@
+node_modules
+.env
+package-lock.json
+
+# solidity-coverage files
+/coverage
+/coverage.json
+
+# Python
+*.pyc
+
+# MacOS
+.DS_Store
+
+# Forge
+out
+broadcast
+dependencies
+
+# Ignores not cache folder, but cache contents to be able to unignore cache/fuzz
+cache/**
+# Inclided cache/fuzz to share failing fuzz tests seeds
+!cache/fuzz
