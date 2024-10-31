@@ -1,0 +1,6 @@
+[submodule "lib/forge-std"]
+	path = lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "lib/maat-v1-strategies"]
+	path = lib/maat-v1-strategies
+	url = https://github.com/maat-protocol/maat-v1-strategies
