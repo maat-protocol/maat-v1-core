@@ -106,6 +106,8 @@ contract MaatVaultV1 is IMaatVaultV1, Vault, Executor {
 
         uint amountOut = _redeem(request.shares, address(this), address(this));
 
+        _cleanRequestInfo(intentionId);
+
         if (request.dstEid == chainEid) {
             token.safeTransfer(request.receiver, amountOut);
         } else {
@@ -118,8 +120,6 @@ contract MaatVaultV1 is IMaatVaultV1, Vault, Executor {
             request.receiver,
             intentionId
         );
-
-        _cleanRequestInfo(intentionId);
     }
 
     /**
