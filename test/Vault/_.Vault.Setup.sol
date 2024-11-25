@@ -77,7 +77,7 @@ contract MaatVaultHarness is MaatVaultV1 {
     }
 
     function setNonce(uint _nonce) public {
-        nonce = _nonce;
+        _nonces[tx.origin] = _nonce;
     }
 
     function getIntentionId(uint _nonce) public view returns (bytes32) {
@@ -86,7 +86,15 @@ contract MaatVaultHarness is MaatVaultV1 {
             chainId := chainid()
         }
 
-        return keccak256(abi.encodePacked(address(this), nonce, chainId));
+        return
+            keccak256(
+                abi.encodePacked(
+                    address(this),
+                    tx.origin,
+                    _nonces[tx.origin],
+                    chainId
+                )
+            );
     }
 
     // Overridden Idle calculations for tests
