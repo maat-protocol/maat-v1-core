@@ -39,8 +39,6 @@ abstract contract Vault is
     /* ======== ERRORS ======== */
 
     error UnauthorizedUser(address user);
-    error TokenIsNotSupported(address token);
-    error AddressIsNotStrategy(address addr);
     error AmountIsTooLow();
 
     /* ======== CONSTRUCTOR ======== */
