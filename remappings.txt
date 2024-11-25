@@ -1,1 +1,2 @@
 forge-std/=lib/forge-std/src/
+maat-strategies/=lib/maat-v1-strategies/
