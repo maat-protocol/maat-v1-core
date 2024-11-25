@@ -16,7 +16,7 @@ contract TestVaultWhenPPSDrops is MaatVaultTestSetup {
     }
 
     function test_defaultOracleValue() public view {
-        uint pps = oracle.getGlobalPPS(address(maatVault));
+        (uint pps, ) = oracle.getGlobalPPS(address(maatVault));
         assertEq(pps, 10 ** 8);
     }
 

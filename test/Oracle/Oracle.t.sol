@@ -34,9 +34,10 @@ contract OracleTest is MaatVaultTestSetup {
         addressProvider.addVault(address(secondMaatVault));
     }
 
-    function testUpdateGlobalPPS() public {
+    function test_UpdateGlobalPPS() public {
         skip(1000);
         uint112 newPPS = 100000010;
+        uint skipInterval = 100;
 
         address[] memory vaults = new address[](1);
         uint112[] memory ppsArray = new uint112[](1);
@@ -46,18 +47,32 @@ contract OracleTest is MaatVaultTestSetup {
 
         oracle.updateGlobalPPS(vaults, ppsArray);
 
-        assertEq(oracle.getPrevGlobalPPS(address(maatVault)), 10 ** 8);
+        (uint prevPPS, ) = oracle.getPrevGlobalPPS(address(maatVault));
+        assertEq(prevPPS, 10 ** 8);
 
-        uint prevPPS = newPPS;
+        prevPPS = newPPS;
         newPPS = 100000100;
 
         ppsArray[0] = newPPS;
 
-        skip(100);
+        skip(skipInterval);
         oracle.updateGlobalPPS(vaults, ppsArray);
 
-        assertEq(oracle.getGlobalPPS(address(maatVault)), newPPS);
-        assertEq(oracle.getPrevGlobalPPS(address(maatVault)), prevPPS);
+        (uint currentPPSFromOracle, uint32 lastUpdateTime) = oracle
+            .getGlobalPPS(address(maatVault));
+
+        (uint prevPPSFromOracle, uint32 prevUpdateTime) = oracle
+            .getPrevGlobalPPS(address(maatVault));
+
+        // Assert Price Per Share
+
+        assertEq(currentPPSFromOracle, newPPS);
+        assertEq(prevPPSFromOracle, prevPPS);
+
+        // Assert Update Time
+
+        assertEq(lastUpdateTime, block.timestamp);
+        assertEq(prevUpdateTime, block.timestamp - skipInterval);
     }
 
     function testAccessControl() public {
@@ -84,7 +99,8 @@ contract OracleTest is MaatVaultTestSetup {
     }
 
     function test_InitFunction_AlreadyInitialized() public {
-        assertEq(oracle.getGlobalPPS(address(maatVault)), 10 ** 8);
+        (uint currentPPS, ) = oracle.getGlobalPPS(address(maatVault));
+        assertEq(currentPPS, 10 ** 8);
 
         vm.expectRevert(
             "MaatOracleGlobalPPS: PricePerShare for this vault already initialized"
@@ -98,7 +114,14 @@ contract OracleTest is MaatVaultTestSetup {
 
         oracle.initPPS(address(secondMaatVault), prevPPS, currentPPS);
 
-        assertEq(oracle.getGlobalPPS(address(secondMaatVault)), currentPPS);
-        assertEq(oracle.getPrevGlobalPPS(address(secondMaatVault)), prevPPS);
+        (uint currentPPSFromOracle, ) = oracle.getGlobalPPS(
+            address(secondMaatVault)
+        );
+        assertEq(currentPPSFromOracle, currentPPS);
+
+        (uint prevPPSFromOracle, ) = oracle.getPrevGlobalPPS(
+            address(secondMaatVault)
+        );
+        assertEq(prevPPSFromOracle, prevPPS);
     }
 }

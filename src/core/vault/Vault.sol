@@ -221,11 +221,8 @@ abstract contract Vault is
     }
 
     function totalAssets() external view virtual returns (uint) {
-        return
-            totalSupply().mulDiv(
-                oracle().getGlobalPPS(address(this)),
-                10 ** oracle().decimals()
-            );
+        (uint currentPPS, ) = oracle().getGlobalPPS(address(this));
+        return totalSupply().mulDiv(currentPPS, 10 ** oracle().decimals());
     }
 
     function convertToShares(uint assets) public view virtual returns (uint) {
@@ -235,8 +232,8 @@ abstract contract Vault is
     function _convertToSharesByHigherPPS(
         uint assets
     ) public view virtual returns (uint) {
-        uint prevPPS = oracle().getPrevGlobalPPS(address(this));
-        uint currentPPS = oracle().getGlobalPPS(address(this));
+        (uint prevPPS, ) = oracle().getPrevGlobalPPS(address(this));
+        (uint currentPPS, ) = oracle().getGlobalPPS(address(this));
 
         uint higherPPS = prevPPS > currentPPS ? prevPPS : currentPPS;
 
@@ -251,8 +248,8 @@ abstract contract Vault is
     function _convertToSharesByLowerPPS(
         uint assets
     ) internal view virtual returns (uint) {
-        uint prevPPS = oracle().getPrevGlobalPPS(address(this));
-        uint currentPPS = oracle().getGlobalPPS(address(this));
+        (uint prevPPS, ) = oracle().getPrevGlobalPPS(address(this));
+        (uint currentPPS, ) = oracle().getGlobalPPS(address(this));
 
         uint lowerPPS = prevPPS < currentPPS ? prevPPS : currentPPS;
 
@@ -276,8 +273,8 @@ abstract contract Vault is
     function _convertToAssetsByHigherPPS(
         uint shares
     ) internal view virtual returns (uint) {
-        uint prevPPS = oracle().getPrevGlobalPPS(address(this));
-        uint currentPPS = oracle().getGlobalPPS(address(this));
+        (uint prevPPS, ) = oracle().getPrevGlobalPPS(address(this));
+        (uint currentPPS, ) = oracle().getGlobalPPS(address(this));
 
         uint higherPPS = prevPPS > currentPPS ? prevPPS : currentPPS;
 
@@ -296,8 +293,8 @@ abstract contract Vault is
     function _convertToAssetsByLowerPPS(
         uint shares
     ) internal view virtual returns (uint) {
-        uint prevPPS = oracle().getPrevGlobalPPS(address(this));
-        uint currentPPS = oracle().getGlobalPPS(address(this));
+        (uint prevPPS, ) = oracle().getPrevGlobalPPS(address(this));
+        (uint currentPPS, ) = oracle().getGlobalPPS(address(this));
 
         uint lowerPPS = prevPPS < currentPPS ? prevPPS : currentPPS;
 

@@ -17,9 +17,13 @@ interface IMaatOracleGlobalPPS {
     );
 
     ///@notice This function returns the global PricePerShare value.
-    function getGlobalPPS(address vault) external view returns (uint256);
+    function getGlobalPPS(
+        address vault
+    ) external view returns (uint256 pricePerShare, uint32 lastUpdateTime);
 
-    function getPrevGlobalPPS(address vault) external view returns (uint);
+    function getPrevGlobalPPS(
+        address vault
+    ) external view returns (uint prevPricePerShare, uint32 prevUpdateTime);
 
     ///@notice This function updates the global PricePerShare value.
     ///@dev This function requires that the caller is an administrator or has appropriate access rights.

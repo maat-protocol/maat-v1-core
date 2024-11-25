@@ -115,14 +115,22 @@ contract MaatOracleGlobalPPS is
     }
 
     /* ========== EXTERNAL ========== */
-    function getPrevGlobalPPS(address vault) external view returns (uint pps) {
-        pps = globalPricePerShare[vault].prevPricePerShare;
-        if (pps == 0) revert VaultIsNotInitialized(vault);
+    function getPrevGlobalPPS(
+        address vault
+    ) external view returns (uint prevPricePerShare, uint32 prevUpdateTime) {
+        prevPricePerShare = globalPricePerShare[vault].prevPricePerShare;
+        if (prevPricePerShare == 0) revert VaultIsNotInitialized(vault);
+        
+        prevUpdateTime = globalPricePerShare[vault].prevUpdateTime;
     }
 
-    function getGlobalPPS(address vault) external view returns (uint pps) {
-        pps = globalPricePerShare[vault].pricePerShare;
-        if (pps == 0) revert VaultIsNotInitialized(vault);
+    function getGlobalPPS(
+        address vault
+    ) external view returns (uint pricePerShare, uint32 lastUpdateTime) {
+        pricePerShare = globalPricePerShare[vault].pricePerShare;
+        if (pricePerShare == 0) revert VaultIsNotInitialized(vault);
+
+        lastUpdateTime = globalPricePerShare[vault].lastUpdateTime;
     }
 
     function decimals() external pure returns (uint) {
